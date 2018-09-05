@@ -1,8 +1,7 @@
 # Wrapper for running the main baseline transformer
 
-# Install aws_cli, the uninstall is needed otherwise it doesnt work
-pip uninstall awscli -y
-pip3 install awscli --upgrade --user
+# Install aws_cli
+pip3 install awscli --upgrade
 
 # Set up the aws credentials
 mkdir ~/.aws
@@ -11,10 +10,6 @@ cat > ~/.aws/credentials <<DELIM
 aws_access_key_id = $AWS_ACCESS_KEY
 aws_secret_access_key = $AWS_SECRET_KEY
 DELIM
-
-# Pull repo
-git clone https://github.com/mozilla-services/foxsec-tools.git
-cd foxsec-tools/metrics/baseline
 
 # Sync todays files
 today=`date +%F`

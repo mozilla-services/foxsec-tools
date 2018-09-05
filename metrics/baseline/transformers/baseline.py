@@ -6,8 +6,6 @@ import datetime
 import json
 import os
 import re
-import sys
-import traceback
 
 
 def handle_site (file, site, date, json_file):

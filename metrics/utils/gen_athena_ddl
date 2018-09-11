@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+#
+#  Propose HIVE DDL supporting supplied JSON files
+#
+USAGE="usage ${0##*/} [options] file...
+where:
+    file    JSON files to create DDL from
+
+options:
+    --download  how to get orc-tools
+    -h|--help   this output
+"
+DOWNLOAD="Download instructions:
+ 1. Find latest version at
+    http://central.maven.org/maven2/org/apache/orc/orc-tools/
+ 2. Download the orc-tools-*-uber.jar file to this directory
+"
+
+warn() { for m; do echo "$m"; done 1>&2 ; }
+die() { warn "$@"; exit 1; }
+usage() { warn "$@" "${USAGE:-}"; test $# -eq 0; exit $? ; }
+
+ORC_JAR=$(ls -1r orc-tools-*-uber.jar 2>/dev/null | head -1)
+
+[[ $ORC_JAR ]] || usage "Missing orc-tools-*-uber.jar" "$DOWNLOAD"
+
+while test $# -gt 0; do
+    case "$1" in
+    -h|--help) usage ;;
+    --download) usage "$DOWNLOAD" ;;
+    -*) usage "Unknown option '$1'" ;;
+    *) break ;;
+    esac
+    shift
+done
+
+type java &>/dev/null || usage "You need to have a JRE installed"
+
+[[ $# > 0 ]] || usage "You need to supply at least one JSON file"
+
+function orc-tools() {
+    java -jar "$ORC_JAR" "$@"
+}
+
+# Changes we make via sed to orc-tool output to make it Athena compatible:
+        # outermost elements are key space value
+        # hyphens are illegal - these should also be mapped
+        # backtick quote all keys in case they are reserved words
+        # but don't double quote the ones orc-tool did
+        # MUST convert binary to strings, or get '[B' parse failures at query time
+        # MUST too easy to overflow tinyint & smallint
+        # MUST datestamp formats are hard to parse don't try
+        # MUST uniontype doesn't exist in Athena
+        # trim wrapping struct which isn't needed
+orc-tools json-schema -p "$@" \
+    | sed \
+        -e "s,^  \(\S\+\):,  \`\1\` ," \
+        -e "s,-,_,g" \
+        -e "s,^\(\s\+\)\(\S\+\):,\1\`\2\`:," \
+        -e "s,\`\`,\`,g" \
+        -e "s,binary,string," \
+        -e "s,smallint,int," \
+        -e "s,timestamp,string," \
+        -e "s,tinyint,int," \
+        -e "s,uniontype<>,string," \
+        -e 1d \
+        -e "\$s,>>,>," 

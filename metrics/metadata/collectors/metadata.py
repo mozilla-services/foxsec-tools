@@ -60,6 +60,7 @@ def main():
 					data = {}
 					data['service'] = service_json['service']
 					data['serviceKey'] = optional(service_json, 'serviceKey')
+					data['category'] = optional(site, 'category')
 					data['url'] = url['url']
 					data['path'] = url['path']
 					data['status'] = url['status']

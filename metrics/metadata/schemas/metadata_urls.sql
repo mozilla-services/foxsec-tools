@@ -1,4 +1,5 @@
 CREATE EXTERNAL TABLE IF NOT EXISTS metadata_urls (
+  `category` STRING,
   `path` STRING,
   `qualifier` STRING,
   `service` STRING,

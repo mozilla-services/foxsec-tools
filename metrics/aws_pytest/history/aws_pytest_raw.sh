@@ -12,8 +12,8 @@ aws_secret_access_key = $AWS_SECRET_KEY
 DELIM
 
 # Clone repo
-git clone https://$cloudsecBotPat@github.com/mozilla-services/foxsec_results.git
-cd foxsec_results/aws-pytest
+git clone https://$cloudsecBotPat@github.com/mozilla-services/foxsec-results.git
+cd foxsec-results/aws-pytest
 
 # Remove the things we dont want
 rm placeholder */placeholder */one-offs

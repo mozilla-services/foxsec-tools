@@ -6,14 +6,6 @@ pip3 install awscli --upgrade
 # Clone repo
 git clone https://$cloudsecBotPat@github.com/mozilla-services/foxsec.git
 
-# Set up the aws credentials
-mkdir ~/.aws
-cat > ~/.aws/credentials <<DELIM
-[default]
-aws_access_key_id = $AWS_ACCESS_KEY
-aws_secret_access_key = $AWS_SECRET_KEY
-DELIM
-
 # Generate latest json files
 mkdir out
 python3 collectors/metadata.py -s foxsec/services/metadata -d out/ 

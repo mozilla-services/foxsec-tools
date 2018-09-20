@@ -8,6 +8,7 @@ where:
 
 options:
     --download  how to get orc-tools
+    --out FILE  where to output
     -h|--help   this output
 "
 DOWNLOAD="Download instructions:
@@ -20,7 +21,8 @@ warn() { for m; do echo "$m"; done 1>&2 ; }
 die() { warn "$@"; exit 1; }
 usage() { warn "$@" "${USAGE:-}"; test $# -eq 0; exit $? ; }
 
-ORC_JAR=$(ls -1r orc-tools-*-uber.jar 2>/dev/null | head -1)
+prog_dir="$(cd $(dirname "$0") && /bin/pwd)"
+ORC_JAR=$(ls -1r ${prog_dir}/orc-tools-*-uber.jar 2>/dev/null | head -1)
 
 [[ $ORC_JAR ]] || usage "Missing orc-tools-*-uber.jar" "$DOWNLOAD"
 
@@ -28,6 +30,7 @@ while test $# -gt 0; do
     case "$1" in
     -h|--help) usage ;;
     --download) usage "$DOWNLOAD" ;;
+    --out) output="$2"; shift ;;
     -*) usage "Unknown option '$1'" ;;
     *) break ;;
     esac
@@ -38,14 +41,19 @@ type java &>/dev/null || usage "You need to have a JRE installed"
 
 [[ $# > 0 ]] || usage "You need to supply at least one JSON file"
 
+if [[ -z "$output" ]] ; then
+    warn "\$0 '$0', trimmed '${0%%*/}'"
+    output="$(mktemp /tmp/${USER}-${0##*/}-XXXXXX)"
+fi
+[[ -w "$output" ]] || die "Can't write to output file '$output'"
+
 function orc-tools() {
     java -jar "$ORC_JAR" "$@"
 }
 
 # Changes we make via sed to orc-tool output to make it Athena compatible:
-        # outermost elements are key space value
+        # outermost elements are key space value, enclosed in backticks
         # hyphens are illegal - these should also be mapped
-        # backtick quote all keys in case they are reserved words
         # but don't double quote the ones orc-tool did
         # MUST convert binary to strings, or get '[B' parse failures at query time
         # MUST too easy to overflow tinyint & smallint
@@ -56,7 +64,6 @@ orc-tools json-schema -p "$@" \
     | sed \
         -e "s,^  \(\S\+\):,  \`\1\` ," \
         -e "s,-,_,g" \
-        -e "s,^\(\s\+\)\(\S\+\):,\1\`\2\`:," \
         -e "s,\`\`,\`,g" \
         -e "s,binary,string," \
         -e "s,smallint,int," \
@@ -64,4 +71,16 @@ orc-tools json-schema -p "$@" \
         -e "s,tinyint,int," \
         -e "s,uniontype<>,string," \
         -e 1d \
-        -e "\$s,>>,>," 
+        -e "\$s,>>,>," \
+    >"$output"
+
+warn "NOTE: you may still need mapping statements for illegal column names"
+warn "      Convention is to prefix with 'NC_' (for Name Collision)"
+warn "      See README"
+warn ""
+if head "$output" 2>/dev/null | grep -iw uniontype &>/dev/null ; then
+    warn "NOTE: 'uniontype' detected, see README"
+    warn ""
+fi
+warn "DDL output is in ${output}"
+warn ""

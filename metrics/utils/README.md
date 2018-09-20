@@ -25,5 +25,20 @@ You'll need to copy/paste the DDL into a 'create table' statement in
 Athena. Build the template for that with a single dummy field,
 specifying JSON input. (The form does not allow for DDL to be entered.)
 
+### Handling illegal field names
+
+Some JSON property names may be illegal. This will be flagged by Athena
+during the table creation. The "simplest" way is to prefix each illegal
+field name with 'NC_'. (Any yes, that doubles the _ for leading
+underscore.)
+
+### Handling "uniontype" schemas
+
+Athena does not understand HIVE's 'uniontype' structure. These are only
+generated when the same property has multiple data types (e.g. Array &
+Object).
+
+The current workaround is to split the base data into each union type
+(see jq in mozilla-services/GitHub-Audit/moz_scripts/ for details).
 
 [orc]: https://orc.apache.org/

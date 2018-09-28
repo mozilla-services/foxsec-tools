@@ -6,7 +6,7 @@ pip3 install awscli --upgrade
 # Clone repo
 git clone https://$cloudsecBotPat@github.com/mozilla-services/foxsec.git
 
-day=`date '+%Y-%M-%d'`
+day=`date '+%Y-%m-%d'`
 
 # Generate latest json file
 mkdir out

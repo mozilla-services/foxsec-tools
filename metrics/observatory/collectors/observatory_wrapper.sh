@@ -10,7 +10,7 @@ day=`date '+%Y-%M-%d'`
 
 # Generate latest json file
 mkdir out
-python3 collectors/observatory.py -s foxsec/services/metadata > out/$day 
+python3 collectors/observatory.py -m foxsec/services/metadata > out/$day 
  
 # Write to aws
 aws s3 cp out/$day s3://foxsec-metrics/observatory/raw_json/

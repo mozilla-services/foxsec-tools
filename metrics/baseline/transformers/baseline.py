@@ -15,12 +15,15 @@ def handle_site (file, site, date, json_file):
     rule2res = {}
     with open(file, 'r') as f:
       for line in f:
+        if line.startswith('Total of'):
+          countStr = line[9:-6]
+          siteDict['urlCount'] = int(countStr)
         # Extract rule id
         m = re.search('\[(.+?)\]', line)
         if m and ':' in line:
           rule2res['rule_' + m.group(1)] = line[0:line.index(':')].replace('-', '_').lower()
     siteDict.update(collections.Counter(rule2res.values()))
-    if 'FAIL' in siteDict or 'FAIL_NEW' in siteDict:
+    if 'fail' in siteDict or 'fail_new' in siteDict:
         siteDict['status'] = 'fail'
     else:
         siteDict['status'] = 'pass'
@@ -53,7 +56,7 @@ def handle_all_files(src_dir, dest_dir):
     while True: 
         day_str = date.strftime("%Y-%m-%d")
         handle_day_files(src_dir, dest_dir, day_str)
-        if date == today:
+        if day_str == today:
             break;  
         date += datetime.timedelta(days=1)
 

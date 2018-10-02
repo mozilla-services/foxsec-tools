@@ -1,4 +1,4 @@
-CREATE EXTERNAL TABLE IF NOT EXISTS foxsec_metrics/baseline (
+CREATE EXTERNAL TABLE IF NOT EXISTS baseline (
   `day` STRING,
   `fail` INT,
   `fail_in_progress` INT,
@@ -71,6 +71,7 @@ CREATE EXTERNAL TABLE IF NOT EXISTS foxsec_metrics/baseline (
   `rule_90033` STRING,
   `site` STRING,
   `status` STRING,
+  `urlCount` INT,
   `warn` INT,
   `warn_in_progress` INT,
   `warn_new` INT

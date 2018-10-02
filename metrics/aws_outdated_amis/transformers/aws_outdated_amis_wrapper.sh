@@ -16,5 +16,5 @@ done
 
 # Perform the transformation
 mkdir out
-./aws_outdated_amis_wrapper.py -s $resdir -d out -D $today
+./aws_outdated_amis.py -s $resdir -d out -D $today
 aws s3 cp out/$today s3://foxsec-metrics/aws_outdated_amis/aws_outdated_amis_json/

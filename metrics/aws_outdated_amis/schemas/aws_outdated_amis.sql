@@ -1,14 +1,14 @@
 CREATE EXTERNAL TABLE IF NOT EXISTS aws_outdated_amis (
   `account` STRING,
-  `aminame` STRING,
-  `app` STRING,
+  `ami_name` STRING,
+  `instance_app` STRING,
   `day` STRING,
-  `name` STRING,
-  `owner` STRING,
-  `stack` STRING,
+  `instance_name` STRING,
+  `instance_owner` STRING,
+  `instance_stack` STRING,
   `status` STRING,
   `test_name` STRING,
-  `type` STRING,
+  `instance_type` STRING,
   `value` STRING
 )
 ROW FORMAT  serde 'org.openx.data.jsonserde.JsonSerDe'

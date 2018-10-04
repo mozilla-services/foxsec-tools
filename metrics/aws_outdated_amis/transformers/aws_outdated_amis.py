@@ -38,7 +38,7 @@ def handle_day_files(src_dir, dest_dir, day_str):
               resDict = {}
               resDict['day'] = day_str;
               resDict['account'] = account
-              resDict['ami_name'] = res['metadata']['ImageId']
+              resDict['ami_name'] = optional(res['metadata'], 'ImageId')
               resDict['test_name'] = res['test_name']
               resDict['status'] = res['status']
               resDict['value'] = res['value']

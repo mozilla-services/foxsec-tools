@@ -38,7 +38,7 @@ def handle_day_files(src_dir, dest_dir, day_str):
               resDict = {}
               resDict['day'] = day_str;
               resDict['account'] = account
-              resDict['name'] = res['name']
+              resDict['ami_name'] = res['metadata']['ImageId']
               resDict['test_name'] = res['test_name']
               resDict['status'] = res['status']
               resDict['value'] = res['value']
@@ -47,11 +47,11 @@ def handle_day_files(src_dir, dest_dir, day_str):
               for tagpair in res['metadata']['Tags']:
                 tags[tagpair['Key']] = tagpair['Value']
 
-              resDict['aminame'] = optional(tags, 'Name')
-              resDict['owner'] = optional(tags, 'Owner')
-              resDict['stack'] = optional(tags, 'Stack')
-              resDict['type'] = optional(tags, 'Type')
-              resDict['app'] = optional(tags, 'App')
+              resDict['instance_name'] = optional(tags, 'Name')
+              resDict['instance_owner'] = optional(tags, 'Owner')
+              resDict['instance_stack'] = optional(tags, 'Stack')
+              resDict['instance_type'] = optional(tags, 'Type')
+              resDict['instance_app'] = optional(tags, 'App')
     
               output_file.write(json.dumps(resDict) + '\n')
         

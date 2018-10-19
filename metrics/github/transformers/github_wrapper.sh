@@ -1,6 +1,6 @@
 # Wrapper for running the main github transformer
 
-set -eu
+set -eux
 # Install other tools
 apt update && apt install -y jq
 
@@ -13,8 +13,16 @@ pip3 install --upgrade \
 git clone --depth 1 https://github.com/mozilla-services/GitHub-Audit
 cd GitHub-Audit
 poetry install
-# create credentials file
+# create credential files
 echo -e "\n$githubAPItoken" >./.credentials
+mkdir -p ~/.aws
+cat >~/.aws/credentials <<EOF
+[cloudservices-aws-stage]
+aws_access_key_id = $AWS_ACCESS_KEY_ID
+aws_secret_access_key = $AWS_SECRET_ACCESS_KEY
+EOF
+
+aws --profile cloudservices-aws-stage s3 ls s3://foxsec-metrics/github/
 
 # run tests for now
 poetry run ./get_branch_protections.py mozilla-frontend-infra

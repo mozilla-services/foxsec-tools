@@ -1,8 +1,8 @@
 # Wrapper for running the main github transformer
 
-set -o e
+set -eu
 # Install other tools
-apt install -y jq
+apt update && apt install -y jq
 
 # Install python tools we need
 pip3 install --upgrade \
@@ -10,7 +10,7 @@ pip3 install --upgrade \
   poetry \
 
 # get the repository we need and set it up
-git clone https://github.com/mozilla-services/GitHub-Audit
+git clone --depth 1 https://github.com/mozilla-services/GitHub-Audit
 cd GitHub-Audit
 poetry install
 # create credentials file

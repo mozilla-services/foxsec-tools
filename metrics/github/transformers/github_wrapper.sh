@@ -1,5 +1,6 @@
 # Wrapper for running the main github transformer
 
+set -o e
 # Install python tools we need
 pip3 install --upgrade \
   awscli \
@@ -14,6 +15,9 @@ echo -e "\n$githubAPItoken" >./.credentials
 
 # run tests for now
 poetry run ./get_branch_protections.py mozilla-frontend-infra
+ls -l *.db.json
+jq . mozilla-frontend-infra.db.json
+id
 
 # bail for now
 exit 33

@@ -9,6 +9,8 @@ pip3 install --upgrade \
 git clone https://github.com/mozilla-services/GitHub-Audit
 cd GitHub-Audit
 poetry install
+# create credentials file
+echo -e "\n$githubAPItoken" >./.credentials
 
 # run tests for now
 poetry run ./get_branch_protections.py mozilla-frontend-infra

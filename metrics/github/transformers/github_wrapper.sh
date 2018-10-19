@@ -13,6 +13,7 @@ pip3 install --upgrade \
 git clone --depth 1 https://github.com/mozilla-services/GitHub-Audit
 cd GitHub-Audit
 poetry install
+
 # create credential files
 echo -e "\n$githubAPItoken" >./.credentials
 mkdir -p ~/.aws
@@ -22,15 +23,8 @@ aws_access_key_id = $AWS_ACCESS_KEY_ID
 aws_secret_access_key = $AWS_SECRET_ACCESS_KEY
 EOF
 
-aws --profile cloudservices-aws-stage s3 ls s3://foxsec-metrics/github/
-
-# run tests for now
-poetry run ./get_branch_protections.py mozilla-frontend-infra
-ls -l *.db.json
-jq . mozilla-frontend-infra.db.json
-
-# attempt upload
-poetry run make -f moz_scripts/Makefile _full_common
+# Run the job
+poetry run make -f moz_scripts/Makefile full
 
 ### Sync todays files
 ##today=`date +%F`

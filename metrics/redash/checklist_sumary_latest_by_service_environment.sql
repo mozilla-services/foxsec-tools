@@ -1,0 +1,1 @@
+SELECT * from foxsec_metrics.checklist_latest_summary

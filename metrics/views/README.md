@@ -54,3 +54,38 @@ just for the repositories we directly support.
 
 This is a view the repositories we directly monitor, with key components
 parsed from the URL string.
+
+# retrieving view descriptions
+In order to backup the View creations statements, the following process
+is recommended. It is assumed you have CLI creds for the staging
+workspace, and have already created a temporary bucket to use for the
+query results.
+
+```bash
+export AWS_DEFAULT_PROFILE=cloudservices-aws-stage
+export AWS_DEFAULT_REGION=us-east-1
+DATABASE=foxsec_metrics
+S3=s3://hwine-test-stage/athena/output/
+
+# Get a list of all views
+stdout=$(aws athena start-query-execution --query-execution-context Database=$DATABASE \
+        --result-configuration "OutputLocation=$S3" \
+        --query-string "show views" )
+qid=$(echo $stdout | jq -r '.QueryExecutionId')
+
+# N.B. all these queries complete "instantly",
+#      this is not Athena best practice
+
+# get and display results
+aws s3 cp ${S3}${qid}.txt .
+cat $qid.txt
+
+# get or update queries
+for query in $(cat $qid.txt); do
+    stdout=$(aws athena start-query-execution --query-execution-context Database=$DATABASE \
+          --result-configuration "OutputLocation=$S3" \
+          --query-string "show create view \"$query\"" )
+    sqlqid=$(echo $stdout | jq -r '.QueryExecutionId')
+    aws s3 cp ${S3}${sqlqid}.txt $query.sql
+done
+```

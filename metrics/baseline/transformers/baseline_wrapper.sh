@@ -23,4 +23,5 @@ python3 transformers/baseline.py -s s3bucket/ -d out/ -f "$today"
 # Write todays files to aws
 aws s3 cp out/details_json/$today s3://foxsec-metrics/baseline/details_json/$today
 aws s3 cp out/sites_json/$today s3://foxsec-metrics/baseline/sites_json/$today
+aws s3 cp out/sites_json/$today s3://foxsec-metrics/baseline/sites_latest_json/sites.json
 aws s3 cp out/rules_json/rules.json s3://foxsec-metrics/baseline/rules_json/rules.json

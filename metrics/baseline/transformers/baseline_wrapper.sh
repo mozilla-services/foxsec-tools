@@ -15,10 +15,10 @@ DELIM
 today=`date +%F`
 mkdir s3bucket
 mkdir out
-aws s3 sync s3://foxsec-metrics/baseline/raw s3bucket --exclude "*" --include "*/$today"
+aws s3 sync s3://foxsec-metrics/baseline/raw/ s3bucket --exclude "*" --include "*/$today"
 
 # Run transformer for today
-python3 transformers/baseline.py -s s3bucket/raw/ -d out/ -f "$today"
+python3 transformers/baseline.py -s s3bucket/ -d out/ -f "$today"
  
 # Write todays files to aws
 aws s3 cp out/details_json/$today s3://foxsec-metrics/baseline/details_json/$today

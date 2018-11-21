@@ -50,7 +50,7 @@ def handle_site (file, site, date, sites_file, details_file):
         elif line.startswith('GROUP: '):
             siteDict['service'] = line[7:-1]
     siteDict.update(collections.Counter(rule2res.values()))
-    if 'fail' in siteDict or 'fail_new' in siteDict:
+    if 'fail' in siteDict or 'fail_new' in siteDict or 'fail_in_progress' in siteDict:
         siteDict['status'] = 'fail'
     else:
         siteDict['status'] = 'pass'

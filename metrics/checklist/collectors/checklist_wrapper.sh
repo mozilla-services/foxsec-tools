@@ -1,7 +1,7 @@
 # Wrapper for running the checklist collector
 
-# Install aws_cli
-pip3 install awscli --upgrade
+# Install aws_cli and boto3
+pip3 install awscli boto3 --upgrade
 
 # Clone repo
 git clone https://$cloudsecBotPat@github.com/mozilla-services/foxsec.git

@@ -59,11 +59,12 @@ def get_github_query_branch_protection():
 
 def get_baseline_query(section, item, column):
 	return ("SELECT '" + section + "' AS section, '" + item + "' AS item, foxsec_metrics.metadata_urls.service, " +
-		"foxsec_metrics.baseline.site, foxsec_metrics.metadata_urls.status as environment, " + 
-		"CASE WHEN foxsec_metrics.baseline." + column + " = 'pass' THEN True ELSE False END pass " +
-		"FROM foxsec_metrics.baseline, foxsec_metrics.metadata_urls " +
-		"WHERE foxsec_metrics.baseline.site = foxsec_metrics.metadata_urls.url and " +
-		"foxsec_metrics.baseline.day = '<<DAY>>' ")
+		"foxsec_metrics.baseline_details.site, foxsec_metrics.metadata_urls.status as environment, " + 
+		"CASE WHEN foxsec_metrics.baseline_details.status = 'pass' THEN True ELSE False END pass " +
+		"FROM foxsec_metrics.baseline_details, foxsec_metrics.metadata_urls " +
+		"WHERE foxsec_metrics.baseline_details.site = foxsec_metrics.metadata_urls.url and " +
+		"foxsec_metrics.baseline_details.rule = '" + column + "' and " +
+		"foxsec_metrics.baseline_details.day = '<<DAY>>' ")
 
 
 def run_raw_query(query):
@@ -125,7 +126,7 @@ def run_raw_query(query):
 
 def run_day_query(query):
 	day = start_day
-	for loop in range(0, 4):
+	for loop in range(0, 6):
 		if run_raw_query(query.replace('<<DAY>>', day.strftime("%Y-%m-%d"))) > 0:
 			break
 		day -= timedelta(1)

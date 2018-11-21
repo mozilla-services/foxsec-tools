@@ -29,12 +29,12 @@ def col_data_to_list(col_data):
 
 def get_rra_query():
 	return ("SELECT 'Risk Management' AS section, 'Must have RRA' AS item, foxsec_metrics.metadata_services.service, " +
-		"'' as site, '' as environment, CASE WHEN foxsec_metrics.metadata_services.rradate = '' THEN False ELSE True END status " +
+		"'' as site, 'global' as environment, CASE WHEN foxsec_metrics.metadata_services.rradate = '' THEN False ELSE True END pass " +
 		"FROM foxsec_metrics.metadata_services")
 
 
 def get_observatory_query():
-	return ("SELECT 'Web Applications' AS section, 'A+ on Observatory' AS item, foxsec_metrics.metadata_urls.service, " +
+	return ("SELECT 'Web Applications' AS section, 'A plus on Observatory' AS item, foxsec_metrics.metadata_urls.service, " +
 		"foxsec_metrics.observatory.site, foxsec_metrics.metadata_urls.status AS environment, " +
 		" CASE WHEN foxsec_metrics.observatory.observatory_score >= 100 THEN True ELSE False END pass " +
 		"FROM foxsec_metrics.observatory, foxsec_metrics.metadata_urls " +
@@ -42,7 +42,7 @@ def get_observatory_query():
 
 
 def get_github_query_2fa():
-	return ("SELECT 'Development' AS section, 'Enforce 2FA' AS item, a.service, '' as site, '' as environment, " +
+	return ("SELECT 'Development' AS section, 'Enforce 2FA' AS item, a.service, '' as site, 'global' as environment, " +
 		"every(b.body.two_factor_requirement_enabled) AS pass " +
 		"FROM foxsec_metrics.metadata_repo_parsed AS a, foxsec_metrics.github_object AS b " +
 		"JOIN (SELECT max(b2.date) AS MaxDay  FROM foxsec_metrics.github_object as b2) ON b.date = MaxDay " +
@@ -50,7 +50,7 @@ def get_github_query_2fa():
 
 
 def get_github_query_branch_protection():
-	return ("SELECT 'Development' AS section, 'Enforce branch protection' AS item, service, '' as site, '' as environment, " +
+	return ("SELECT 'Development' AS section, 'Enforce branch protection' AS item, service, '' as site, 'global' as environment, " +
 		"every(protected) AS pass FROM foxsec_metrics.default_branch_protection_status " +
 		"JOIN (SELECT max(default_branch_protection_status.date) AS MaxDay " +
 		"FROM foxsec_metrics.default_branch_protection_status) md ON default_branch_protection_status.date = MaxDay " +

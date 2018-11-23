@@ -63,7 +63,7 @@ def get_baseline_query(section, item, column):
 	return ("SELECT '" + section + "' AS section, '" + item + "' AS item, foxsec_metrics.metadata_urls.service, " +
 		"foxsec_metrics.baseline_details.site, foxsec_metrics.metadata_urls.status as environment, " + 
 		"CASE WHEN foxsec_metrics.baseline_details.status = 'pass' THEN True ELSE False END pass, " +
-		"CONCAT('https://sql.telemetry.mozilla.org/dashboard/security-baseline-service-scores?p_service_60201=', foxsec_metrics.metadata_urls.service) AS link " +
+		"CONCAT('https://sql.telemetry.mozilla.org/dashboard/security-baseline-service-latest?p_site_60280=', foxsec_metrics.baseline_details.site) AS link " +
 		"FROM foxsec_metrics.baseline_details, foxsec_metrics.metadata_urls " +
 		"WHERE foxsec_metrics.baseline_details.site = foxsec_metrics.metadata_urls.url and " +
 		"foxsec_metrics.baseline_details.rule = '" + column + "' and " +
@@ -74,13 +74,13 @@ def get_baseline_status_query(section, item):
 	return ("SELECT '" + section + "' AS section, '" + item + "' AS item, foxsec_metrics.metadata_urls.service, " +
 		"foxsec_metrics.baseline_sites_latest.site, foxsec_metrics.metadata_urls.status as environment, " + 
 		"CASE WHEN foxsec_metrics.baseline_sites_latest.status = 'pass' THEN True ELSE False END pass, " +
-		"CONCAT('https://sql.telemetry.mozilla.org/dashboard/security-baseline-service-scores?p_service_60201=', foxsec_metrics.metadata_urls.service) AS link " +
+		"CONCAT('https://sql.telemetry.mozilla.org/dashboard/security-baseline-service-latest?p_site_60280=', foxsec_metrics.baseline_sites_latest.site) AS link " +
 		"FROM foxsec_metrics.baseline_sites_latest, foxsec_metrics.metadata_urls " +
 		"WHERE foxsec_metrics.baseline_sites_latest.site = foxsec_metrics.metadata_urls.url")
 
 
 def run_raw_query(query):
-	sys.stderr.write (query + "\n")
+	sys.stderr.write (query + "\n\n")
 	client = boto3.client('athena', region_name='us-east-1')
 	clients3 = boto3.client('s3', region_name='us-east-1')
 	bucket = 'foxsec-metrics'

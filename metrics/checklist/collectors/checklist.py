@@ -38,14 +38,14 @@ def get_observatory_query():
 	return ("SELECT 'Web Applications' AS section, 'A plus on Observatory' AS item, foxsec_metrics.metadata_urls.service, " +
 		"foxsec_metrics.observatory.site, foxsec_metrics.metadata_urls.status AS environment, " +
 		"CASE WHEN foxsec_metrics.observatory.observatory_score >= 100 THEN True ELSE False END pass, " +
-		"'https://observatory.mozilla.org/analyze.html?host={{site}}' as link " +
+		"CONCAT('https://observatory.mozilla.org/analyze.html?host=', foxsec_metrics.observatory.site) as link " +
 		"FROM foxsec_metrics.observatory, foxsec_metrics.metadata_urls " +
 		"WHERE foxsec_metrics.observatory.site = foxsec_metrics.metadata_urls.url AND foxsec_metrics.observatory.day = '<<DAY>>' ")
 
 
 def get_github_query_2fa():
 	return ("SELECT 'Development' AS section, 'Enforce 2FA' AS item, a.service, '' as site, 'global' as environment, " +
-		"every(b.body.two_factor_requirement_enabled) AS pass " +
+		"'' as link, every(b.body.two_factor_requirement_enabled) AS pass " +
 		"FROM foxsec_metrics.metadata_repo_parsed AS a, foxsec_metrics.github_object AS b " +
 		"JOIN (SELECT max(b2.date) AS MaxDay  FROM foxsec_metrics.github_object as b2) ON b.date = MaxDay " +
 		"GROUP BY (service)")
@@ -53,7 +53,7 @@ def get_github_query_2fa():
 
 def get_github_query_branch_protection():
 	return ("SELECT 'Development' AS section, 'Enforce branch protection' AS item, service, '' as site, 'global' as environment, " +
-		"every(protected) AS pass FROM foxsec_metrics.default_branch_protection_status " +
+		"'' as link, every(protected) AS pass FROM foxsec_metrics.default_branch_protection_status " +
 		"JOIN (SELECT max(default_branch_protection_status.date) AS MaxDay " +
 		"FROM foxsec_metrics.default_branch_protection_status) md ON default_branch_protection_status.date = MaxDay " +
 		"GROUP BY service")
@@ -63,7 +63,7 @@ def get_baseline_query(section, item, column):
 	return ("SELECT '" + section + "' AS section, '" + item + "' AS item, foxsec_metrics.metadata_urls.service, " +
 		"foxsec_metrics.baseline_details.site, foxsec_metrics.metadata_urls.status as environment, " + 
 		"CASE WHEN foxsec_metrics.baseline_details.status = 'pass' THEN True ELSE False END pass, " +
-		"'https://sql.telemetry.mozilla.org/dashboard/security-baseline-service-scores?p_service_60201={{service}}' AS link " +
+		"CONCAT('https://sql.telemetry.mozilla.org/dashboard/security-baseline-service-scores?p_service_60201=', foxsec_metrics.metadata_urls.service) AS link " +
 		"FROM foxsec_metrics.baseline_details, foxsec_metrics.metadata_urls " +
 		"WHERE foxsec_metrics.baseline_details.site = foxsec_metrics.metadata_urls.url and " +
 		"foxsec_metrics.baseline_details.rule = '" + column + "' and " +

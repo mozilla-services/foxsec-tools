@@ -29,14 +29,16 @@ def col_data_to_list(col_data):
 
 def get_rra_query():
 	return ("SELECT 'Risk Management' AS section, 'Must have RRA' AS item, foxsec_metrics.metadata_services.service, " +
-		"'' as site, 'global' as environment, CASE WHEN foxsec_metrics.metadata_services.rradate = '' THEN False ELSE True END pass " +
+		"'' as site, 'global' as environment, CASE WHEN foxsec_metrics.metadata_services.rradate = '' THEN False ELSE True END pass, " +
+		"foxsec_metrics.metadata_services.rra as link " +
 		"FROM foxsec_metrics.metadata_services")
 
 
 def get_observatory_query():
 	return ("SELECT 'Web Applications' AS section, 'A plus on Observatory' AS item, foxsec_metrics.metadata_urls.service, " +
 		"foxsec_metrics.observatory.site, foxsec_metrics.metadata_urls.status AS environment, " +
-		" CASE WHEN foxsec_metrics.observatory.observatory_score >= 100 THEN True ELSE False END pass " +
+		"CASE WHEN foxsec_metrics.observatory.observatory_score >= 100 THEN True ELSE False END pass, " +
+		"'https://observatory.mozilla.org/analyze.html?host={{site}}' as link " +
 		"FROM foxsec_metrics.observatory, foxsec_metrics.metadata_urls " +
 		"WHERE foxsec_metrics.observatory.site = foxsec_metrics.metadata_urls.url AND foxsec_metrics.observatory.day = '<<DAY>>' ")
 
@@ -60,7 +62,8 @@ def get_github_query_branch_protection():
 def get_baseline_query(section, item, column):
 	return ("SELECT '" + section + "' AS section, '" + item + "' AS item, foxsec_metrics.metadata_urls.service, " +
 		"foxsec_metrics.baseline_details.site, foxsec_metrics.metadata_urls.status as environment, " + 
-		"CASE WHEN foxsec_metrics.baseline_details.status = 'pass' THEN True ELSE False END pass " +
+		"CASE WHEN foxsec_metrics.baseline_details.status = 'pass' THEN True ELSE False END pass, " +
+		"'https://sql.telemetry.mozilla.org/dashboard/security-baseline-service-scores?p_service_60201={{service}}' AS link " +
 		"FROM foxsec_metrics.baseline_details, foxsec_metrics.metadata_urls " +
 		"WHERE foxsec_metrics.baseline_details.site = foxsec_metrics.metadata_urls.url and " +
 		"foxsec_metrics.baseline_details.rule = '" + column + "' and " +

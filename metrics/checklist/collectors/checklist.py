@@ -70,6 +70,15 @@ def get_baseline_query(section, item, column):
 		"foxsec_metrics.baseline_details.day = '<<DAY>>' ")
 
 
+def get_baseline_status_query(section, item):
+	return ("SELECT '" + section + "' AS section, '" + item + "' AS item, foxsec_metrics.metadata_urls.service, " +
+		"foxsec_metrics.baseline_sites_latest.site, foxsec_metrics.metadata_urls.status as environment, " + 
+		"CASE WHEN foxsec_metrics.baseline_sites_latest.status = 'pass' THEN True ELSE False END pass, " +
+		"CONCAT('https://sql.telemetry.mozilla.org/dashboard/security-baseline-service-scores?p_service_60201=', foxsec_metrics.metadata_urls.service) AS link " +
+		"FROM foxsec_metrics.baseline_sites_latest, foxsec_metrics.metadata_urls " +
+		"WHERE foxsec_metrics.baseline_sites_latest.site = foxsec_metrics.metadata_urls.url")
+
+
 def run_raw_query(query):
 	sys.stderr.write (query + "\n")
 	client = boto3.client('athena', region_name='us-east-1')
@@ -151,8 +160,9 @@ def main():
 	run_day_query(get_baseline_query('Web Applications', 'Content type', 'rule_10019'))
 	run_day_query(get_baseline_query('Web Applications', 'Cookies httponly', 'rule_10010'))
 	run_day_query(get_baseline_query('Web Applications', 'Cookies secure', 'rule_10011'))
-	run_day_query(get_baseline_query('Web Applications', 'No baseline failures', 'status'))
 	run_day_query(get_observatory_query())
+
+	run_raw_query(get_baseline_status_query('Web Applications', 'No baseline failures'))
 
 	# Security features
 	run_day_query(get_baseline_query('Security Features', 'Anti CSRF tokens', 'rule_10202'))

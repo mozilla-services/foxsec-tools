@@ -6,5 +6,5 @@ python3 check/depricated_sites.py -m foxsec/services/metadata > depeciated_outpu
 
 if [ -s 'depeciated_output' ]; then
    # Some of the tests have failed, raise an alert
-   ../../utils/raise_github_issue.py -t "Deprecated or terminated sites changes" -f issues.txt -a depeciated_output -r foxsec-results -p $cloudsecBotPat
+   ../../utils/raise_github_issue.py -t "Deprecated or terminated sites changed" -f depeciated_output -a psiinon -r foxsec-results -p $cloudsecBotPat
 fi

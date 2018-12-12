@@ -1,15 +1,12 @@
-CREATE EXTERNAL TABLE IF NOT EXISTS baseline_sites (
-  `day` STRING,
-  `fail_in_progress` INT,
-  `fail_new` INT,
-  `ignore_new` INT,
-  `info_new` INT,
-  `pass` INT,
+CREATE EXTERNAL TABLE IF NOT EXISTS checklist (
+  `environment` STRING,
+  `item` STRING,
+  `link` STRING,
+  `pass` STRING,
+  `repo` STRING,
+  `section` STRING,
   `service` STRING,
-  `site` STRING,
-  `status` STRING,
-  `urlCount` INT,
-  `warn_new` INT
+  `site` STRING
 )
 ROW FORMAT  serde 'org.openx.data.jsonserde.JsonSerDe'
-LOCATION 's3://foxsec-metrics/baseline/sites_json/';
+LOCATION 's3://foxsec-metrics/checklist/raw_json';

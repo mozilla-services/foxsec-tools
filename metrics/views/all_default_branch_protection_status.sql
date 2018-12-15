@@ -5,7 +5,7 @@ SELECT
 , "URL"
 , "split_part"("url", '/', 3) "Org"
 , "split_part"("url", '/', 4) "Repo"
-, "split_part"("url", '/', 5) "Branch"
+, "split_part"("url", '/', 6) "Branch"
 , "date"
 FROM
   github_object

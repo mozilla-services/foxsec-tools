@@ -1,0 +1,1 @@
+select service as "service::multi-filter", section as "section::multi-filter", item as "item::multi-filter", environment as "environment::multi-filter", site, pass  from foxsec_metrics.checklist

@@ -6,7 +6,6 @@ Currently only S3 is supported.
 
 import argparse
 import boto3
-import os
 
 def upload_file(locfile, desttype, destloc, destname):
     """
@@ -19,9 +18,7 @@ def upload_file(locfile, desttype, destloc, destname):
         destname (str):   The destination name, for s3 this may include a path
     """
     if desttype == 's3':
-        s3 = boto3.client('s3',
-                          aws_access_key_id=os.environ['AWS_ACCESS_KEY'],
-                          aws_secret_access_key=os.environ['AWS_SECRET_KEY'],)
+        s3 = boto3.client('s3')
         s3.upload_file(locfile, destloc, destname)
     else:
         raise ValueError('Destination type not supported, currently only s3 is supported.')
@@ -37,9 +34,7 @@ def download_file(locfile, srctype, srcloc, srcname):
         srcname (str):    The source name, for s3 this may include a path
     """
     if srctype == 's3':
-        s3 = boto3.client('s3',
-                          aws_access_key_id=os.environ['AWS_ACCESS_KEY'],
-                          aws_secret_access_key=os.environ['AWS_SECRET_KEY'],)
+        s3 = boto3.client('s3')
         s3.download_file(srcloc, srcname, locfile)
     else:
         raise ValueError('Source type not supported, currently only s3 is supported.')

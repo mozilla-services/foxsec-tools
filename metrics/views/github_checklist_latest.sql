@@ -1,6 +1,7 @@
 CREATE VIEW foxsec_metrics.github_checklist_latest AS
 SELECT
-  ' ' "environment"
+  'global' "environment"
+, ' ' "link"
 , 'Follow GitHub security standard' "item"
 , CAST("protected" AS varchar) "pass"
 , 'Development' "section"
@@ -19,4 +20,3 @@ INNER JOIN (
    GROUP BY "service", "org", "repo"
 )  b ON (((("a"."service" = "b"."service") AND ("a"."org" = "b"."org")) AND ("a"."repo" = "b"."repo")) AND ("a"."date" = "b"."date")))
 ORDER BY "service" ASC, "site" ASC
-LIMIT 10

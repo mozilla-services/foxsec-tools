@@ -55,7 +55,21 @@ just for the repositories we directly support.
 This is a view the repositories we directly monitor, with key components
 parsed from the URL string.
 
-# retrieving view descriptions
+# maintaining view descriptions
+## updating view descriptsions
+The easiest way to update a view's description is via the AWS Athena
+console. (If the change is already committed here, copy/paste into the
+console.)
+
+You should then do a backup. If you copied/pasted from an already
+committed file, there there should be no non-whitespace difference
+between the committed & updated. I.e. the following command should not
+produce any results:
+
+    git diff -b {alread_commited_file}
+
+## backup view descriptions
+
 In order to backup the View creations statements, the following process
 is recommended. It is assumed you have CLI creds for the staging
 workspace, and have already created a temporary bucket to use for the

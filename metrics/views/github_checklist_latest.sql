@@ -1,8 +1,8 @@
 CREATE VIEW foxsec_metrics.github_checklist_latest AS
 SELECT
   'global' "environment"
-, ' ' "link"
 , 'Follow GitHub security standard' "item"
+, ' ' "link"
 , CAST("protected" AS varchar) "pass"
 , 'Development' "section"
 , "a"."service"

@@ -1,3 +1,7 @@
+#!/bin/bash
+
+set -e
+
 # Wrapper for running the main aws_outdated_amis transformer
 
 # Install aws_cli

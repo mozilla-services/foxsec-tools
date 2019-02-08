@@ -42,10 +42,12 @@ def handle_day_files(src_dir, dest_dir, day_str):
               resDict['test_name'] = res['test_name']
               resDict['status'] = res['status']
               resDict['value'] = res['value']
+
               # Extract all of the metadata tags
               tags = {}
-              for tagpair in res['metadata']['Tags']:
-                tags[tagpair['Key']] = tagpair['Value']
+              if res['metadata'].get('Tags') is not None:
+                  for tagpair in res['metadata']['Tags']:
+                    tags[tagpair['Key']] = tagpair['Value']
 
               resDict['instance_name'] = optional(tags, 'Name')
               resDict['instance_owner'] = optional(tags, 'Owner')

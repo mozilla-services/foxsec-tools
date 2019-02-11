@@ -23,7 +23,7 @@ def handle_day_files(src_dir, dest_dir, day_str):
         # Loop through json files in dir
         for acc_file in fnmatch.filter(sorted(os.listdir(src_dir + '/' + account)), "*-" + day_str + ".json"):
           output_file = open(dest_dir + '/' + day_str, 'a')
-          
+
           # Analyse the files
           with open(src_dir + '/' + account + '/' + acc_file) as f:
             data = json.load(f)
@@ -35,28 +35,29 @@ def handle_day_files(src_dir, dest_dir, day_str):
               print("Zero results in " + src_dir + '/' + account + '/' + acc_file)
               continue
             for res in data["results"]:
-              resDict = {}
-              resDict['day'] = day_str;
-              resDict['account'] = account
-              resDict['ami_name'] = optional(res['metadata'], 'ImageId')
-              resDict['test_name'] = res['test_name']
-              resDict['status'] = res['status']
-              resDict['value'] = res['value']
+              if res["test_name"] == "test_ec2_instance_running_required_amis":
+                resDict = {}
+                resDict['day'] = day_str;
+                resDict['account'] = account
+                resDict['ami_name'] = optional(res['metadata'], 'ImageId')
+                resDict['test_name'] = res['test_name']
+                resDict['status'] = res['status']
+                resDict['value'] = res['value']
 
-              # Extract all of the metadata tags
-              tags = {}
-              if res['metadata'].get('Tags') is not None:
+                # Extract all of the metadata tags
+                tags = {}
+                if res['metadata'].get('Tags') is not None:
                   for tagpair in res['metadata']['Tags']:
                     tags[tagpair['Key']] = tagpair['Value']
 
-              resDict['instance_name'] = optional(tags, 'Name')
-              resDict['instance_owner'] = optional(tags, 'Owner')
-              resDict['instance_stack'] = optional(tags, 'Stack')
-              resDict['instance_type'] = optional(tags, 'Type')
-              resDict['instance_app'] = optional(tags, 'App')
-    
-              output_file.write(json.dumps(resDict) + '\n')
-        
+                resDict['instance_name'] = optional(tags, 'Name')
+                resDict['instance_owner'] = optional(tags, 'Owner')
+                resDict['instance_stack'] = optional(tags, 'Stack')
+                resDict['instance_type'] = optional(tags, 'Type')
+                resDict['instance_app'] = optional(tags, 'App')
+
+                output_file.write(json.dumps(resDict) + '\n')
+
           output_file.close()
 
 

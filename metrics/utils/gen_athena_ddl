@@ -45,7 +45,6 @@ if [[ -z "$output" ]] ; then
     warn "\$0 '$0', trimmed '${0%%*/}'"
     output="$(mktemp /tmp/${USER}-${0##*/}-XXXXXX)"
 fi
-[[ -w "$output" ]] || die "Can't write to output file '$output'"
 
 function orc-tools() {
     java -jar "$ORC_JAR" "$@"
@@ -59,7 +58,7 @@ function orc-tools() {
         # MUST too easy to overflow tinyint & smallint
         # MUST datestamp formats are hard to parse don't try
         # MUST uniontype doesn't exist in Athena
-        # trim wrapping struct which isn't needed
+        # trim wrapping structs which aren't needed (1st & last lines)
 orc-tools json-schema -p "$@" \
     | sed \
         -e "s,^  \(\S\+\):,  \`\1\` ," \
@@ -71,7 +70,7 @@ orc-tools json-schema -p "$@" \
         -e "s,tinyint,int," \
         -e "s,uniontype<>,string," \
         -e 1d \
-        -e "\$s,>>,>," \
+        -e "\$s,>,,g" \
     >"$output"
 
 warn "NOTE: you may still need mapping statements for illegal column names"

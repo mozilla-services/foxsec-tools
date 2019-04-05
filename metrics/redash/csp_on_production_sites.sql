@@ -4,7 +4,9 @@ SELECT foxsec_metrics.baseline_details.day,
                ELSE 0
            END) pass,
        sum(CASE
-               WHEN foxsec_metrics.baseline_details.status != 'pass' THEN 1
+               WHEN foxsec_metrics.baseline_details.status = 'fail' THEN 1
+               WHEN foxsec_metrics.baseline_details.status = 'fail_in_progress' THEN 1
+               WHEN foxsec_metrics.baseline_details.status = 'fail_new' THEN 1
                ELSE 0
            END) fail
 FROM foxsec_metrics.baseline_details

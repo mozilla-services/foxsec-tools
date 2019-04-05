@@ -1,1 +1,1 @@
-select item from foxsec_metrics.checklist group by item order by item
+select item from foxsec_metrics.checklist_combined group by item order by item

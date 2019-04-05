@@ -1,0 +1,2 @@
+select yesterday, today, concat('<a href="https://sql.telemetry.mozilla.org/dashboard/security-baseline-site-history?p_site_60205=', site, '">', site, '</a>') as site,
+description, old_status, new_status from baseline_changes

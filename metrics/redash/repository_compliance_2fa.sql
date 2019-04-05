@@ -9,7 +9,13 @@ latestRecord AS
      (SELECT max(github_object.date) AS MaxDay
       FROM github_object) md ON github_object.date = MaxDay
    -- make sure we're working with an org record
-   WHERE body.has_organization_projects is not null )
+   WHERE body.has_organization_projects is not null ),
+-- From orgs we're actively monitoring
+orgsOfInterest AS
+   (SELECT 
+  "split_part"("repo", '/', 4) "Org"
+   from foxsec_metrics.metadata_repos)
+ 
 
 -- only report once per org
  select distinct
@@ -21,5 +27,6 @@ latestRecord AS
  -- if missing, we didn't have permissions to that org
  else 'unknown'
  end as "2FA"
-from latestRecord
-order by Organization asc
+from latestRecord 
+JOIN orgsOfInterest ON body.login = orgsOfInterest.Org
+order by "2FA" asc, Organization asc

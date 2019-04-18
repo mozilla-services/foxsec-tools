@@ -10,7 +10,6 @@ import re
 ruleDict = {}
 
 def load_day_file(src_dir, day_str):
-
   sites_dict = {}
 
   with open(src_dir + '/details_json/' + day_str, 'r') as f:
@@ -38,6 +37,7 @@ def compare_days_file(src_dir, dest_dir, day1_str, day2_str):
           record['day'] = day2_str
           record['prev'] = day1_str
           record['site'] = site
+          record['description'] = desc
           record['old_status'] = prev[site][desc]
           record['new_status'] = day[site][desc]
           changes_file.write(json.dumps(record) + '\n')

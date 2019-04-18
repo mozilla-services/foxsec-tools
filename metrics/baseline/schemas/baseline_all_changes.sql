@@ -2,6 +2,7 @@ CREATE EXTERNAL TABLE IF NOT EXISTS baseline_all_changes (
   `day` STRING,
   `prev` STRING,
   `site` STRING,
+  `description` STRING,
   `old_status` STRING,
   `new_status` STRING
 )

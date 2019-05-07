@@ -1,6 +1,9 @@
 CREATE VIEW foxsec_metrics.github_branch_of_interest_latest AS
 SELECT
-  "body"
+  "mdi"."service"
+, "mdi"."org"
+, "mdi"."repo"
+, "body"
 , "date"
 , "rc"
 , "url"

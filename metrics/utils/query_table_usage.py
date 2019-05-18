@@ -64,7 +64,7 @@ def safe_get_next(generator):
                 skip_to_newline = False
                 last_was_hyphen = False
         except IndentationError:
-            logger.info("Ignoring IndentationError")
+            logger.trace("Ignoring IndentationError")
             w_type = tokenize.OP
             w = "."
             yield w_type, w.lower()
@@ -79,14 +79,14 @@ def parse_tables(g):
             continue
         if w_type == tokenize.OP:
             continue
-        logger.debug("{} {} table {} internal {}", w_type, w,
+        logger.trace("{} {} table {} internal {}", w_type, w,
                 table_name_next, internal_table_next)
         if table_name_next and w_type == tokenize.NAME:
             # handle "... from (select ..."
             if w in state_reset:
                 table_name_next = False
                 internal_table_next = False
-                logger.debug("{} table {}, internal {}", w,
+                logger.trace("{} table {}, internal {}", w,
                         table_name_next, internal_table_next)
             else:
                 if w in skip_words:
@@ -95,20 +95,20 @@ def parse_tables(g):
                 elif internal_table_next:
                     table_names.append("<{}>".format(w))
                     internal_table_next = False
-                    logger.debug("{} table {}, internal {}", w,
+                    logger.trace("{} table {}, internal {}", w,
                             table_name_next, internal_table_next)
                 else:
                     table_names.append(w)
-                    logger.debug("{} table {}, internal {}", w,
+                    logger.trace("{} table {}, internal {}", w,
                             table_name_next, internal_table_next)
                 table_name_next = False
-                logger.debug("{} table {}, internal {}", w,
+                logger.trace("{} table {}, internal {}", w,
                         table_name_next, internal_table_next)
         elif w in table_leadin:
             table_name_next = True
             if w in internal_tables:
                 internal_table_next = True
-            logger.debug("{} table {}, internal {}", w,
+            logger.trace("{} table {}, internal {}", w,
                     table_name_next, internal_table_next)
     return table_names
 

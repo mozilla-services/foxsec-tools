@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "views"
+version = "0.1.0"
+description = "Show which queries use which tables"
+authors = ["Your Name <you@example.com>"]
+license = "MPL-2.0"
+
+[tool.poetry.dependencies]
+python = "^3.5"
+loguru = "^0.2.5"
+
+[tool.poetry.dev-dependencies]
+ipython = "^7.5"
+pudb = "^2019.1"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"

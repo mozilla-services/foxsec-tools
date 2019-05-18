@@ -1,13 +1,11 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
     Create a dot file showing table dependencies based on SQL files
     supplied on the commandline.
 
-    Parsing uses heuristics to be "close enough". Tables which are
-    internal only (e.g. created via the 'WITH' statement) are shown in
-    blue. (Single connection table names are may also be internal, but
-    not identified as such.)
+    Parsing uses heuristics to be "close enough". Color coding: none for
+    S3 tables, gold for Athena views, green for Redash queries, blue for
+    "internal" Redash tables (i.e. 'WITH' clause).
 """
 
 """

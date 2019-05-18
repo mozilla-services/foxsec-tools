@@ -3,6 +3,43 @@
 Utilities in this directory are most likely only needed by the metrics
 product.
 
+## query_table_usage - Generate DOT diagrams of table usage
+
+This tool generates DOT diagrams from our backup files (or any sql
+file). It is adhoc, and works with our usage of Athena and Redash.
+
+Typical usage is to generate a diagram of the entire data flow through
+tables. For that, use:
+```bash
+    ./query_table_usage.py ../redash/*.sql ../views/*.sql >whole_graph.dot
+```
+or
+```bash
+    ./query_table_usage.py ../redash/*.sql ../views/*.sql \
+      | dot -Tsvg >whole_graph.svg
+```
+
+That diagram can be a bit unwieldy. Most often, you're interested in a
+subgraph starting or terminating at a specific node (table or query).
+
+### Which queries depend on table X?
+
+To find all views and queries which depend on a specific table, specify
+a table name as the ``--source`` for the diagram:
+
+```bash
+    ./query_table_usage.py --source X ../redash/*.sql ../views/*.sql >whole_graph.dot
+```
+
+### Where does query X get it's data from?
+
+To find all views and queries which are used to produce a table, specify
+a table name as the ``--sink`` for the diagram:
+
+```bash
+    ./query_table_usage.py --sink X ../redash/*.sql ../views/*.sql >whole_graph.dot
+```
+
 ## gen_athena_ddl - Generate Athena compatible DDL from JSON files
 
 This tool is used to generate DDL from a collection of sample JSON

@@ -3,7 +3,7 @@
 WITH 
 -- We only care about current status
 latestRecord AS
-  (SELECT date, body.login, body.two_factor_requirement_enabled
+  (SELECT date, body
    FROM github_object
    JOIN
      (SELECT max(github_object.date) AS MaxDay
@@ -12,19 +12,21 @@ latestRecord AS
    WHERE body.has_organization_projects is not null ),
 -- From orgs we're actively monitoring
 orgsOfInterest AS
-   (SELECT distinct
+   (SELECT 
   "split_part"("repo", '/', 4) "Org"
    from foxsec_metrics.metadata_repos)
+ 
+
 -- only report once per org
- select
+ select distinct
  date,
- login as "Organization",
-  case two_factor_requirement_enabled
+ body.login as "Organization",
+ case body.two_factor_requirement_enabled
  when true then 'enabled'
  when false then 'disabled'
  -- if missing, we didn't have permissions to that org
  else 'unknown'
  end as "2FA"
 from latestRecord 
-JOIN orgsOfInterest ON login = Org
+JOIN orgsOfInterest ON body.login = orgsOfInterest.Org
 order by "2FA" asc, Organization asc

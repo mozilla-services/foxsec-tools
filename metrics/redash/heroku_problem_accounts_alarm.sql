@@ -16,4 +16,5 @@ SELECT email,
        two_factor_authentication
 FROM heroku_invalid_staff_sso_latest
 )
-select count(*) from invalid_accounts
+select count(*) as "Bad Accounts"
+from invalid_accounts

@@ -5,7 +5,7 @@ Date,
     count_if( not Protected) as "Unprotected",
      
     count(*) AS "Total"
-FROM foxsec_metrics.default_branch_protection_status
+FROM foxsec_metrics.github_production_branch_protection_status
 GROUP BY Date
 -- order for table view only
 ORDER BY Date DESC

@@ -117,15 +117,28 @@ group_colors = {
     "": "chocolate",
 }
 
+group_prefix = {
+    "internal": None,
+    "redash": "../redash",
+    "views": "../views",
+    "": None,
+}
+
 def output_group(name, members):
     color = group_colors.get(name, "pink")
+    prefix = group_prefix.get(name, None)
     if members:
         print("""subgraph cluster{} {{
             node [color={}, style=filled];
             color={};
             rank = "same";
-            "{}"
-        }}""".format(name, color, color, '"; "'.join(members)))
+        """.format(name, color, color))
+        for m in members:
+            if prefix:
+                print(r"""            "{}" [URL="{}/\N.sql"];""".format(m, prefix))
+            else:
+                print(r"""            "{}";""".format(m))
+        print("""}""")
 
 
 @logger.catch

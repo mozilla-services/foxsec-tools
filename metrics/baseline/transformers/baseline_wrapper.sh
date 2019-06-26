@@ -19,7 +19,13 @@ aws s3 sync s3://foxsec-metrics/baseline/raw/ s3bucket --exclude "*" --include "
 
 # Run transformers for today
 python3 transformers/baseline.py -s s3bucket/ -d out/ -f "$today"
-python3 transformers/baseline_changes.py -s s3bucket/ -d out/ -l
+
+# Also need at least one previous result
+aws s3 sync s3://foxsec-metrics/baseline/details_json/ out/details_json/ --exclude "*" --include "`date --date="1 day ago" +%F`"
+aws s3 sync s3://foxsec-metrics/baseline/details_json/ out/details_json/ --exclude "*" --include "`date --date="2 day ago" +%F`"
+aws s3 sync s3://foxsec-metrics/baseline/details_json/ out/details_json/ --exclude "*" --include "`date --date="3 day ago" +%F`"
+
+python3 transformers/baseline_changes.py -s out/ -d out/ -l
 
  
 # Write todays files to aws

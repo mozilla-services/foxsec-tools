@@ -20,12 +20,12 @@ def get_args():
     parser = argparse.ArgumentParser(description=__doc__)
 
     parser.add_argument('-s', '--source-dir',
-                        default='.',
-                        help='source directory')
+			default='.',
+			help='source directory')
     
     parser.add_argument('-d', '--dest-dir',
 						default='.',
-                        help='destination directory')
+			help='destination directory')
     
     return parser.parse_args()
 
@@ -36,6 +36,7 @@ def main():
 	services_file = open(args.dest_dir + '/metadata_services.json','w')
 	urls_file = open(args.dest_dir + '/metadata_urls.json','w')
 	repos_file = open(args.dest_dir + '/metadata_repos.json','w')
+	raw_file = open(args.dest_dir + '/metadata.json','w')
 	
 	for filename in os.listdir(args.source_dir):
 		if filename.endswith(".json"): 
@@ -77,9 +78,13 @@ def main():
 					
 					repos_file.write(json.dumps(data) + '\n')
 
+			# Raw
+			raw_file.write(json.dumps(service_json) + '\n')
+
 	services_file.close()
 	urls_file.close()
 	repos_file.close()
+	raw_file.close()
 
 
 if __name__ == '__main__':

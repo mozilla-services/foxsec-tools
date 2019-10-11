@@ -38,7 +38,7 @@ def get_observatory_query():
 	return ("SELECT 'Web Applications' AS section, 'A plus on Observatory' AS item, foxsec_metrics.metadata_urls.service, " +
 		"foxsec_metrics.observatory.site, foxsec_metrics.metadata_urls.status AS environment, " +
 		"CASE WHEN foxsec_metrics.observatory.observatory_score >= 100 THEN True ELSE False END pass, " +
-		"CONCAT('https://observatory.mozilla.org/analyze.html?host=', foxsec_metrics.observatory.site) as link, '' as repo  " +
+		"CONCAT('https://observatory.mozilla.org/analyze/', foxsec_metrics.observatory.site) as link, '' as repo  " +
 		"FROM foxsec_metrics.observatory, foxsec_metrics.metadata_urls " +
 		"WHERE foxsec_metrics.observatory.site = foxsec_metrics.metadata_urls.url AND foxsec_metrics.observatory.day = '<<DAY>>' ")
 

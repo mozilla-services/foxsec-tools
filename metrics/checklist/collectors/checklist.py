@@ -99,7 +99,7 @@ def run_raw_query(query):
 	qeid = response['QueryExecutionId']
 	#print('qeid=' + qeid)
 	rows_found = 0
-	for x in range(0, 10):
+	for x in range(0, 100):
 		response = client.get_query_execution(QueryExecutionId=qeid)
 		#print (response)
 		state = response['QueryExecution']['Status']['State']

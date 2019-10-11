@@ -45,19 +45,23 @@ def get_observatory_query():
 
 def get_github_query_2fa():
 	return ("SELECT 'Development' AS section, 'Enforce 2FA' AS item, a.service, '' as site, 'global' as environment, " +
-		"'' as link, every(b.body.two_factor_requirement_enabled) AS pass, '' as repo  " +
+		"CONCAT('https://', a.Host, '/', a.Org, '/', a.Repo) AS link, " +
+		"every(b.body.two_factor_requirement_enabled) AS pass, '' as repo  " +
 		"FROM foxsec_metrics.metadata_repo_parsed AS a, foxsec_metrics.github_object AS b " +
 		"JOIN (SELECT max(b2.date) AS MaxDay  FROM foxsec_metrics.github_object as b2) ON b.date = MaxDay " +
-		"GROUP BY (service)")
+		"GROUP BY (service, a.Host, a.Org, a.Repo) " +
+		"ORDER BY (service, a.Host, a.Org, a.Repo)")
 
 
 def get_github_query_branch_protection():
 	return ("SELECT 'Development' AS section, 'Enforce branch protection' AS item, service, '' as site, 'global' as environment, " +
-		"'' as link, every(protected) AS pass, '' as repo " +
-		" FROM foxsec_metrics.default_branch_protection_status " +
+		"CONCAT('https://github.com/', Org, '/', Repo) AS link, " +
+		"every(protected) AS pass, '' as repo " +
+		"FROM foxsec_metrics.default_branch_protection_status " +
 		"JOIN (SELECT max(default_branch_protection_status.date) AS MaxDay " +
 		"FROM foxsec_metrics.default_branch_protection_status) md ON default_branch_protection_status.date = MaxDay " +
-		"GROUP BY service")
+		"GROUP BY (service, Org, Repo) " +
+		"ORDER BY (service, Org, Repo)")
 
 
 def get_baseline_query(section, item, column):
@@ -134,6 +138,7 @@ def run_raw_query(query):
 			sys.stderr.write (str(response))
 			sys.stderr.write ('\n')
 			break
+	sys.stderr.write ("Rows returned : " + str(rows_found) + "\n\n")
 	return rows_found
 
 

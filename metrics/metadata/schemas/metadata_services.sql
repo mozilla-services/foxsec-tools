@@ -1,4 +1,5 @@
 CREATE EXTERNAL TABLE IF NOT EXISTS metadata_services (
+  `risk` STRING,
   `riskSummary` STRING,
   `rra` STRING,
   `rraData` STRING,

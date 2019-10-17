@@ -48,6 +48,7 @@ def main():
 			meta_data['service'] = service_json['service']
 			meta_data['serviceKey'] = optional(service_json, 'serviceKey')
 			meta_data['rra'] = service_json['rra']
+			meta_data['risk'] = service_json['risk']
 			meta_data['riskSummary'] = optional(service_json, 'riskSummary')
 			meta_data['rraDate'] = optional(service_json, 'rraDate')
 			meta_data['rraData'] = optional(service_json, 'rraData')

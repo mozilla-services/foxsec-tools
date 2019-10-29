@@ -53,6 +53,7 @@ def main():
 			meta_data['rraDate'] = optional(service_json, 'rraDate')
 			meta_data['rraData'] = optional(service_json, 'rraData')
 			meta_data['rraImpact'] = optional(service_json, 'rraImpact')
+			meta_data['awsAppTags'] = optional(service_json, 'awsAppTags')
 
 			services_file.write(json.dumps(meta_data) + '\n')
 

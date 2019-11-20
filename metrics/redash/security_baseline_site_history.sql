@@ -1,5 +1,5 @@
 select day, 
-concat('<a href="https://sql.telemetry.mozilla.org/dashboard/security-baseline-site-scores?p_w53296_day_undefined=', day, 
+concat('<a href="https://sql.telemetry.mozilla.org/dashboard/security-baseline-site-scores?p_w53296_day_60202=', day, 
   '&p_site_60202=', site, 
   '&p_site_undefined=', site, 
   '">', site, '</a>') as site,

@@ -24,10 +24,14 @@
    AND a.date = b.date )
    
 -- Find the repositories which have regressed
-SELECT latestRecord.service,
+SELECT 
        latestRecord.org,
        latestRecord.repo,
        latestRecord.branch,
+       latestRecord.service,
+       -- match "never protected" csv format
+       false as "protected",
+       concat('https://github.com/', latestRecord.org, '/', latestRecord.repo, '/settings/branches') as "Admin Link",
        "Last Protected"
 FROM github_active_branch_of_interest_latest as latestRecord
 INNER JOIN everProtected ON (everProtected.service = latestRecord.service

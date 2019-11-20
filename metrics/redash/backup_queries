@@ -1,0 +1,84 @@
+#!/usr/bin/env bash
+
+# put admin credentials in environment and call rest of command line
+USAGE="usage: ${0##*/} [options] arg...
+use stmocli to track all queries referenced in input files
+
+Input files are stmo query search results 'save as text' from the
+browser.
+
+Options:
+    -h|--help	    output this help
+    -q|--quiet	    do not output progress data
+"
+
+set -eu
+
+warn() { for m; do echo "$m"; done 1>&2 ; }
+die() { warn "$@" ; exit 2; }
+usage() { warn "$@" "${USAGE:-}" ; [[ $# == 0 ]] && exit 0 || exit 1;}
+
+# Parse options
+VERBOSE=1
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+	-h|--help) usage ;;
+	-q|--quiet) VERBOSE=0 ;;
+	-*) usage "Unknown option '$1'" ;;
+	*) break ;;
+    esac
+    shift
+done
+
+# check for assumed programs
+type -p stmocli-wrapper &>/dev/null \
+    || die "Can't find helper stmocli-wrapper" "See README for info"
+type -p stmocli &>/dev/null \
+    || die "Can't find helper stmocli" "See README for info"
+
+
+# Now have non-option args
+test $# -gt 0 || usage "Missing args"
+
+function backup_query() {
+    local query_number="$1"
+    [[ $VERBOSE -gt 0 ]] && echo "Starting to track $query_number"
+    
+    # track will ask about filename, we always take default, so pass in LF
+    echo \
+	| stmocli-wrapper track "$query_number"
+}
+
+function extract_query_ids() {
+    local fpath="$1"
+    # since there will be multiple files, there will be many duplicates,
+    # so take the time to get a unique list
+    #
+    # Input format is one query URL per line:
+    #  <https://sql.telemetry.mozilla.org/queries/59954>
+    # we just want the last number
+    awk '/\/queries\/[[:digit:]]+/ {split($NF, a, "[/>]"); print a[length(a)-1]}' "$fpath"
+}
+
+function backup_queries() {
+    # query ids are on stdin
+    local id ids
+    while true; do
+	if read -a ids; then
+	    for id in ${ids[@]}; do
+		backup_query $id
+	    done
+	else
+	    # no more input
+	    break
+	fi
+    done
+}
+
+# process all supplied files
+for f in "$@"; do
+    [[ -r "$f" ]] || die "No such file '$f'"
+    extract_query_ids "$f"
+done \
+    | sort -un \
+    | backup_queries

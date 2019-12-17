@@ -2,17 +2,17 @@
 
 set -eux
 # Install other tools
-apt update && apt install -y jq
+apt-get --quiet update && apt-get --quiet install -y jq
 
 # Install python tools we need
-pip3 install --upgrade \
+pip3 install --quiet --upgrade \
   awscli \
   poetry \
 
 # get the repository we need and set it up
-git clone --depth 1 https://github.com/mozilla-services/GitHub-Audit
+git clone --quiet --depth 1 --branch GH-54-fetch-failures https://github.com/mozilla-services/GitHub-Audit
 cd GitHub-Audit
-poetry install
+poetry install --quiet
 
 # create credential files
 echo -e "\n$githubAPItoken" >./.credentials

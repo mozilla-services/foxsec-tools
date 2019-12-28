@@ -3,9 +3,11 @@
     Create a dot file showing table dependencies based on SQL files
     supplied on the commandline.
 
-    Parsing uses heuristics to be "close enough". Color coding: none for
-    S3 tables, gold for Athena views, green for Redash queries, blue for
-    "internal" Redash tables (i.e. 'WITH' clause).
+    Parsing uses heuristics to be "close enough". Color coding:
+       - none for S3 or BQ tables,
+       - gold for Athena views,
+       - green for Redash queries,
+       - blue for "internal" Redash tables (i.e. 'WITH' clause).
 """
 
 """
@@ -16,6 +18,7 @@
 
 import argparse
 import collections
+from pathlib import Path
 import io
 import sys
 import tokenize
@@ -77,15 +80,21 @@ def parse_tables(g):
             continue
         if w_type == tokenize.OP:
             continue
-        logger.trace("{} {} table {} internal {}", w_type, w,
-                table_name_next, internal_table_next)
+        logger.trace(
+            "{} {} table {} internal {}",
+            w_type,
+            w,
+            table_name_next,
+            internal_table_next,
+        )
         if table_name_next and w_type == tokenize.NAME:
             # handle "... from (select ..."
             if w in state_reset:
                 table_name_next = False
                 internal_table_next = False
-                logger.trace("{} table {}, internal {}", w,
-                        table_name_next, internal_table_next)
+                logger.trace(
+                    "{} table {}, internal {}", w, table_name_next, internal_table_next
+                )
             else:
                 if w in skip_words:
                     # don't change anything
@@ -93,22 +102,33 @@ def parse_tables(g):
                 elif internal_table_next:
                     table_names.append("<{}>".format(w))
                     internal_table_next = False
-                    logger.trace("{} table {}, internal {}", w,
-                            table_name_next, internal_table_next)
+                    logger.trace(
+                        "{} table {}, internal {}",
+                        w,
+                        table_name_next,
+                        internal_table_next,
+                    )
                 else:
                     table_names.append(w)
-                    logger.trace("{} table {}, internal {}", w,
-                            table_name_next, internal_table_next)
+                    logger.trace(
+                        "{} table {}, internal {}",
+                        w,
+                        table_name_next,
+                        internal_table_next,
+                    )
                 table_name_next = False
-                logger.trace("{} table {}, internal {}", w,
-                        table_name_next, internal_table_next)
+                logger.trace(
+                    "{} table {}, internal {}", w, table_name_next, internal_table_next
+                )
         elif w in table_leadin:
             table_name_next = True
             if w in internal_tables:
                 internal_table_next = True
-            logger.trace("{} table {}, internal {}", w,
-                    table_name_next, internal_table_next)
+            logger.trace(
+                "{} table {}, internal {}", w, table_name_next, internal_table_next
+            )
     return table_names
+
 
 group_colors = {
     "internal": "lightblue",
@@ -117,51 +137,51 @@ group_colors = {
     "": "chocolate",
 }
 
-group_prefix = {
-    "internal": None,
-    "redash": "../redash",
-    "views": "../views",
-    "": None,
-}
+group_prefix = {"internal": None, "redash": "../redash", "views": "../views", "": None}
+
 
 def output_group(name, members):
     color = group_colors.get(name, "pink")
     prefix = group_prefix.get(name, None)
     if members:
-        print("""subgraph cluster{} {{
+        print(
+            """subgraph cluster{} {{
             node [color={}, style=filled];
             color={};
             rank = "same";
-        """.format(name, color, color))
+        """.format(
+                name, color, color
+            )
+        )
         for m in members:
             if prefix:
-                print(r"""            "{}" [URL="{}/\N.sql"];""".format(m, prefix))
+                print(r"""            "{}" [URL="{}/{}.sql"];""".format(m, prefix, m))
             else:
                 print(r"""            "{}";""".format(m))
         print("""}""")
 
 
 @logger.catch
-def process_files(file_list):
+def process_files(path_list):
     global logger
-    #logger.add(sys.stderr, format="{time} {extra[file_name]} - {message}")
+    # logger.add(sys.stderr, format="{time} {extra[file_name]} - {message}")
     logger = logger.bind(file_name="<global>")
     internal_tables = set()
     table_groups = collections.defaultdict(set)
     edges = collections.defaultdict(set)
-    for file_name in file_list:
-        logger = logger.bind(file_name=file_name)
+    for path in path_list:
+        logger = logger.bind(file_name=str(path))
 
-        with open(file_name, "rb") as f:
+        with open(path, "rb") as f:
             table_names = parse_tables(tokenize.tokenize(f.readline))
-        if file_name.endswith(sql_extension):
-            table_name = file_name[: -len(sql_extension)]
-        table_name = table_name[table_name.rindex('/')+1:]
+        if path.suffix == sql_extension:
+            table_name = path.stem
+        else:
+            table_name = path.name
         try:
-            file_group = file_name[:file_name.rindex('/')].replace('/',
-                    '').replace('.', '')
+            file_group = path.parent.name.replace(".", "")
         except ValueError:
-            file_group = ''
+            file_group = ""
         table_groups[file_group].add(table_name)
 
         for t in table_names:
@@ -175,15 +195,19 @@ def process_files(file_list):
             edges[t].add(table_name)
     return table_groups, edges
 
+
 def output_edge(tail, head):
     if tail.startswith("<"):
         print('"{}" [shape="box"];'.format(tail))
     print('"{}" -> "{}";'.format(tail, head))
 
+
 def output_graph(groups, edges):
     global logger
-    print(r"""strict digraph {
-            rankdir = LR;""")
+    print(
+        r"""strict digraph {
+            rankdir = LR;"""
+    )
     logger = logger.bind(file_name="<global>")
     for k, v in groups.items():
         output_group(k, v)
@@ -191,6 +215,7 @@ def output_graph(groups, edges):
         for head in heads:
             output_edge(tail, head)
     print(r"""}""")
+
 
 def extract_tree(orig_groups, orig_edges, root_node):
     """
@@ -217,6 +242,7 @@ def extract_tree(orig_groups, orig_edges, root_node):
         groups[k] = v & all_nodes
     return groups, edges
 
+
 def flip_edges(orig_edges):
     edges = collections.defaultdict(set)
     for tail, heads in orig_edges.items():
@@ -224,30 +250,46 @@ def flip_edges(orig_edges):
             edges[head].add(tail)
     return edges
 
+
 def extract_inverted_tree(orig_groups, orig_edges, end_node):
     flipped_edges = flip_edges(orig_edges)
     groups, reversed_edges = extract_tree(orig_groups, flipped_edges, end_node)
     return groups, flip_edges(reversed_edges)
 
+
 def parse_args():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--source", help="Restrict to subgraph starting at SOURCE")
     parser.add_argument("--sink", help="Restrict to subgraph ending at SINK")
-    parser.add_argument("files", nargs="+", help="SQL files to be parsed")
+    parser.add_argument(
+        "files",
+        nargs="*",
+        help="SQL files to be parsed",
+        default=["../views/*.sql", "../redash/*.sql"],
+    )
     return parser.parse_args()
+
+
+def expand_files(l=None):
+    expanded_files = []
+    for item in l:
+        if ("*" in item or "?" in item) and not item.startswith("/"):
+            expanded_files.extend([p for p in Path(".").glob(item)])
+        else:
+            expanded_files.append([Path(item)])
+    return expanded_files
 
 
 @logger.catch
 def main():
     args = parse_args()
     if args.files:
-        groups, edges = process_files(args.files)
+        expanded_files = expand_files(args.files)
+        groups, edges = process_files(expanded_files)
         if args.source:
-            groups, edges = extract_tree(groups, edges,
-                    args.source)
+            groups, edges = extract_tree(groups, edges, args.source)
         elif args.sink:
-            groups, edges = extract_inverted_tree(groups, edges,
-                    args.sink)
+            groups, edges = extract_inverted_tree(groups, edges, args.sink)
         output_graph(groups, edges)
     return 0
 

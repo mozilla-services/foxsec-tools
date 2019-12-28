@@ -36,7 +36,7 @@
    AND a.date = b.date )
    
 -- Find the repositories which have not regressed
-SELECT
+SELECT distinct
        latestRecord.org,
        latestRecord.repo,
        latestRecord.branch,
@@ -47,4 +47,4 @@ FROM latestRecord
 INNER JOIN everProtected ON (everProtected.service = latestRecord.service
                              AND everProtected.org = latestRecord.org
                              AND everProtected.repo = latestRecord.repo)
-ORDER BY org asc, repo asc
+ORDER BY latestRecord.org asc, latestRecord.repo asc

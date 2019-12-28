@@ -26,5 +26,5 @@ orgsOfInterest AS
  else 'unknown'
  end as "2FA"
 from latestRecord 
-JOIN orgsOfInterest ON login = Org
+JOIN orgsOfInterest ON lower(login) = lower(Org)
 order by "2FA" asc, Organization asc

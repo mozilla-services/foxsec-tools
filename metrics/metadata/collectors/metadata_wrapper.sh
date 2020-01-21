@@ -14,4 +14,5 @@ python3 collectors/metadata.py -s foxsec/services/metadata -d out/
 aws s3 cp out/metadata_services.json s3://foxsec-metrics/metadata/metadata_services_json/metadata_services.json
 aws s3 cp out/metadata_urls.json s3://foxsec-metrics/metadata/metadata_urls_json/metadata_urls.json
 aws s3 cp out/metadata_repos.json s3://foxsec-metrics/metadata/metadata_repos_json/metadata_repos.json
+aws s3 cp out/metadata.json s3://foxsec-metrics/metadata/metadata_json/metadata.json
 aws s3 cp out/metadata.json s3://foxsec-metrics/metadata/raw/metadata.json

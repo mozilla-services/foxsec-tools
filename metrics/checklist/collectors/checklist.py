@@ -44,13 +44,52 @@ def get_observatory_query():
 
 
 def get_github_query_2fa():
-	return ("SELECT 'Development' AS section, 'Enforce 2FA' AS item, a.service, '' as site, 'global' as environment, " +
-		"CONCAT('https://', a.Host, '/', a.Org, '/', a.Repo) AS link, " +
-		"every(b.body.two_factor_requirement_enabled) AS pass, '' as repo  " +
-		"FROM foxsec_metrics.metadata_repo_parsed AS a, foxsec_metrics.github_object AS b " +
-		"JOIN (SELECT max(b2.date) AS MaxDay  FROM foxsec_metrics.github_object as b2) ON b.date = MaxDay " +
-		"GROUP BY (service, a.Host, a.Org, a.Repo) " +
-		"ORDER BY (service, a.Host, a.Org, a.Repo)")
+	return ("""
+		-- Extract Organizations 2FA status
+		-- it's not a boolean, as it could be unavailable
+		-- but we treat "enabled" as "pass", all else as "fail"
+		WITH
+		-- We only care about current status
+		latestRecord AS
+			(SELECT date, body.login, body.two_factor_requirement_enabled
+			FROM github_object
+			JOIN
+				(SELECT max(github_object.date) AS MaxDay
+				FROM github_object) md ON github_object.date = MaxDay
+			-- make sure we're working with an org record
+			WHERE body.has_organization_projects is not null ),
+		-- From orgs we're actively monitoring
+		orgsOfInterest AS
+			(SELECT distinct
+			"split_part"("repo", '/', 4) "Org"
+			from foxsec_metrics.metadata_repos),
+		-- only report once per org
+		org_2fa as
+			(select
+			date,
+			login as "Organization",
+			case two_factor_requirement_enabled
+			when true then 'Pass'
+			else 'Fail'
+			end as "2FA"
+			from latestRecord
+			JOIN orgsOfInterest ON lower(login) = lower(Org))
+
+		SELECT distinct
+			'Development' AS section,
+			'Enforce 2FA' AS item,
+			a.service,
+			'' AS site,
+			'global' AS environment,
+			CONCAT('https://', a.Host, '/', a.Org, '/settings/security') AS link,
+			org_2fa."2FA" AS pass,
+			'' AS repo
+		FROM foxsec_metrics.metadata_repo_parsed AS a
+		JOIN
+			org_2fa
+			ON a.Org = "Organization"
+		ORDER BY  (a.service)
+	""")
 
 
 def get_github_query_branch_protection():
@@ -66,7 +105,7 @@ def get_github_query_branch_protection():
 
 def get_baseline_query(section, item, column):
 	return ("SELECT '" + section + "' AS section, '" + item + "' AS item, foxsec_metrics.metadata_urls.service, " +
-		"foxsec_metrics.baseline_details.site, foxsec_metrics.metadata_urls.status as environment, " + 
+		"foxsec_metrics.baseline_details.site, foxsec_metrics.metadata_urls.status as environment, " +
 		"CASE WHEN foxsec_metrics.baseline_details.status = 'pass' THEN True ELSE False END pass, " +
 		"CONCAT('https://sql.telemetry.mozilla.org/dashboard/security-baseline-service-latest?p_site_60280=', foxsec_metrics.baseline_details.site) AS link, '' as repo  " +
 		"FROM foxsec_metrics.baseline_details, foxsec_metrics.metadata_urls " +
@@ -77,7 +116,7 @@ def get_baseline_query(section, item, column):
 
 def get_baseline_status_query(section, item):
 	return ("SELECT '" + section + "' AS section, '" + item + "' AS item, foxsec_metrics.metadata_urls.service, " +
-		"foxsec_metrics.baseline_sites_latest.site, foxsec_metrics.metadata_urls.status as environment, " + 
+		"foxsec_metrics.baseline_sites_latest.site, foxsec_metrics.metadata_urls.status as environment, " +
 		"CASE WHEN foxsec_metrics.baseline_sites_latest.status = 'pass' THEN True ELSE False END pass, " +
 		"CONCAT('https://sql.telemetry.mozilla.org/dashboard/security-baseline-service-latest?p_site_60280=', foxsec_metrics.baseline_sites_latest.site) AS link, '' as repo  " +
 		"FROM foxsec_metrics.baseline_sites_latest, foxsec_metrics.metadata_urls " +
@@ -95,7 +134,7 @@ def run_raw_query(query):
 		ResultConfiguration={
 			'OutputLocation': tempdir,
 		})
-	
+
 	qeid = response['QueryExecutionId']
 	#print('qeid=' + qeid)
 	rows_found = 0
@@ -118,16 +157,16 @@ def run_raw_query(query):
 				else :
 					row_json = {}
 					col_data = col_data_to_list(row['Data'])
-					
+
 					i = 0
 					for header in col_headers:
 						#print(col['VarCharValue'])
 						row_json[header] = col_data[i]
 						i+=1
-					
+
 					print(json.dumps(row_json))
 					rows_found += 1
-				
+
 			#print ('Parsed result: ' + response['ResultSet']['Rows'][1]['Data'][0]['VarCharValue'])
 			# Delete the files
 			clients3.delete_object(Bucket=bucket, Key='temp/' + qeid + '.csv')
@@ -153,14 +192,14 @@ def run_day_query(query):
 def main():
 	# Risk Management
 	run_raw_query(get_rra_query())
-	
+
 	# Infrastructure
 	run_day_query(get_baseline_query('Web Applications', 'Set STS', 'rule_10035'))
-	
+
 	# Development
 	run_raw_query(get_github_query_2fa())
 	run_raw_query(get_github_query_branch_protection())
-	
+
 	# Web applications
 	run_day_query(get_baseline_query('Web Applications', 'CSP present', 'rule_10038'))
 	run_day_query(get_baseline_query('Web Applications', 'Content type', 'rule_10019'))

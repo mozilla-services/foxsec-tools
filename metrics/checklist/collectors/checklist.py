@@ -3,8 +3,13 @@
 """
 Script to generate checklist files via Athena queries
 
-NOTE: All queries are run in Athena's default database, so all database
-references must be fully qualified.
+NOTES: 
+
+- All queries are run in Athena's default database, so all database
+  references must be fully qualified.
+
+- The "item" column is a boolean - only true or false should be
+  returned.
 """
 
 import argparse
@@ -72,8 +77,8 @@ def get_github_query_2fa():
 			date,
 			login as "Organization",
 			case two_factor_requirement_enabled
-			when true then 'Pass'
-			else 'Fail'
+			when true then true
+			else false
 			end as "2FA"
 			from latestRecord
 			JOIN orgsOfInterest ON lower(login) = lower(Org))
@@ -84,7 +89,7 @@ def get_github_query_2fa():
 			a.service,
 			'' AS site,
 			'global' AS environment,
-			CONCAT('https://', a.Host, '/', a.Org, '/settings/security') AS link,
+			CONCAT('https://', a.Host, '/organizations/', a.Org, '/settings/security') AS link,
 			org_2fa."2FA" AS pass,
 			'' AS repo
 		FROM foxsec_metrics.metadata_repo_parsed AS a

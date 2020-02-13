@@ -1,4 +1,5 @@
 CREATE EXTERNAL TABLE IF NOT EXISTS metadata_repos (
+  `appCode` STRING,
   `repo` STRING,
   `service` STRING,
   `serviceKey` STRING

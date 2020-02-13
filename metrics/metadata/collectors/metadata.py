@@ -45,6 +45,7 @@ def main():
 
 			# Top level metadata
 			meta_data = {}
+			meta_data['appCode'] = service_json['appCode']
 			meta_data['service'] = service_json['service']
 			meta_data['serviceKey'] = optional(service_json, 'serviceKey')
 			meta_data['rra'] = service_json['rra']
@@ -61,6 +62,7 @@ def main():
 			for site in service_json['sites']:
 				for url in site['urls']:
 					data = {}
+					data['appCode'] = service_json['appCode']
 					data['service'] = service_json['service']
 					data['serviceKey'] = optional(service_json, 'serviceKey')
 					data['category'] = optional(site, 'category')
@@ -74,6 +76,7 @@ def main():
 			# Repos
 			for repo in service_json['sourceControl']:
 					data = {}
+					data['appCode'] = service_json['appCode']
 					data['service'] = service_json['service']
 					data['serviceKey'] = optional(service_json, 'serviceKey')
 					data['repo'] = repo

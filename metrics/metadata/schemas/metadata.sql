@@ -1,5 +1,6 @@
 CREATE EXTERNAL TABLE IF NOT EXISTS foxsec_metrics_stage.metadata_hwine (
-    `audits` array<struct<
+  `appCode` STRING,
+  `audits` array<struct<
       auditor:string,
       date:string,
       link:string,

@@ -37,6 +37,7 @@ def col_data_to_list(col_data):
 
 def get_rra_query():
 	return ("SELECT 'Risk Management' AS section, 'Must have RRA' AS item, foxsec_metrics.metadata_services.service, " +
+		"foxsec_metrics.metadata_services.appCode, " +
 		"'' as site, 'global' as environment, CASE WHEN foxsec_metrics.metadata_services.rradate = '' THEN False ELSE True END pass, " +
 		"foxsec_metrics.metadata_services.rra as link, '' as repo " +
 		"FROM foxsec_metrics.metadata_services")
@@ -44,6 +45,7 @@ def get_rra_query():
 
 def get_observatory_query():
 	return ("SELECT 'Web Applications' AS section, 'A plus on Observatory' AS item, foxsec_metrics.metadata_urls.service, " +
+		"foxsec_metrics.metadata_urls.appCode, " +
 		"foxsec_metrics.observatory.site, foxsec_metrics.metadata_urls.status AS environment, " +
 		"CASE WHEN foxsec_metrics.observatory.observatory_score >= 100 THEN True ELSE False END pass, " +
 		"CONCAT('https://observatory.mozilla.org/analyze/', foxsec_metrics.observatory.site) as link, '' as repo  " +
@@ -87,6 +89,7 @@ def get_github_query_2fa():
 			'Development' AS section,
 			'Enforce 2FA' AS item,
 			a.service,
+			a.appCode,
 			'' AS site,
 			'global' AS environment,
 			CONCAT('https://', a.Host, '/organizations/', a.Org, '/settings/security') AS link,
@@ -101,18 +104,19 @@ def get_github_query_2fa():
 
 
 def get_github_query_branch_protection():
-	return ("SELECT 'Development' AS section, 'Enforce branch protection' AS item, service, '' as site, 'global' as environment, " +
+	return ("SELECT 'Development' AS section, 'Enforce branch protection' AS item, service, appCode, '' as site, 'global' as environment, " +
 		"CONCAT('https://github.com/', Org, '/', Repo) AS link, " +
 		"every(protected) AS pass, '' as repo " +
 		"FROM foxsec_metrics.default_branch_protection_status " +
 		"JOIN (SELECT max(default_branch_protection_status.date) AS MaxDay " +
 		"FROM foxsec_metrics.default_branch_protection_status) md ON default_branch_protection_status.date = MaxDay " +
-		"GROUP BY (service, Org, Repo) " +
-		"ORDER BY (service, Org, Repo)")
+		"GROUP BY (service, appCode, Org, Repo) " +
+		"ORDER BY (service, appCode, Org, Repo)")
 
 
 def get_baseline_query(section, item, column):
 	return ("SELECT '" + section + "' AS section, '" + item + "' AS item, foxsec_metrics.metadata_urls.service, " +
+		"foxsec_metrics.metadata_urls.appCode, " +
 		"foxsec_metrics.baseline_details.site, foxsec_metrics.metadata_urls.status as environment, " +
 		"CASE WHEN foxsec_metrics.baseline_details.status = 'pass' THEN True ELSE False END pass, " +
 		"CONCAT('https://sql.telemetry.mozilla.org/dashboard/security-baseline-service-latest?p_site_60280=', foxsec_metrics.baseline_details.site) AS link, '' as repo  " +
@@ -124,6 +128,7 @@ def get_baseline_query(section, item, column):
 
 def get_baseline_status_query(section, item):
 	return ("SELECT '" + section + "' AS section, '" + item + "' AS item, foxsec_metrics.metadata_urls.service, " +
+		"foxsec_metrics.metadata_urls.appCode, " +
 		"foxsec_metrics.baseline_sites_latest.site, foxsec_metrics.metadata_urls.status as environment, " +
 		"CASE WHEN foxsec_metrics.baseline_sites_latest.status = 'pass' THEN True ELSE False END pass, " +
 		"CONCAT('https://sql.telemetry.mozilla.org/dashboard/security-baseline-service-latest?p_site_60280=', foxsec_metrics.baseline_sites_latest.site) AS link, '' as repo  " +

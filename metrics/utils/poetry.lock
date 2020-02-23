@@ -183,6 +183,14 @@ version = "2.4.0"
 
 [[package]]
 category = "dev"
+description = "A poor man's debugger for Python."
+name = "pysnooper"
+optional = false
+python-versions = "*"
+version = "0.3.0"
+
+[[package]]
+category = "dev"
 description = "Python 2 and 3 compatibility utilities"
 name = "six"
 optional = false
@@ -228,7 +236,7 @@ python-versions = "*"
 version = "0.5"
 
 [metadata]
-content-hash = "5d75d0dd046babe4783541f1603f7287cfb4e46abf365b38d4ada8fec887a94a"
+content-hash = "36fbc59c43525df712e2ea21ecec1927ae3bfc47a2edf8355e164e4e2c2e3fa3"
 python-versions = "^3.5"
 
 [metadata.hashes]
@@ -249,6 +257,7 @@ prompt-toolkit = ["11adf3389a996a6d45cc277580d0d53e8a5afd281d0c9ec71b28e6f121463
 ptyprocess = ["923f299cc5ad920c68f2bc0bc98b75b9f838b93b599941a6b63ddbc2476394c0", "d7cc528d76e76342423ca640335bd3633420dc1366f258cb31d05e865ef5ca1f"]
 pudb = ["ac30cfc64580958ab7265decb4cabb9141f08781ff072e9a336d5a7942ce35a6"]
 pygments = ["31cba6ffb739f099a85e243eff8cb717089fdd3c7300767d9fc34cb8e1b065f5", "5ad302949b3c98dd73f8d9fcdc7e9cb592f120e32a18e23efd7f3dc51194472b"]
+pysnooper = ["7d7684d9d5cf1d026bba6a52e87009eab9458d3265b13059ab1abaea7eee6c93", "85892ef6f4009af7d729e73c7b9e4071a16d5063b1ac9340741c5f192501441b"]
 six = ["3350809f0555b11f552448330d0b52d5f24c91a322ea4a15ef22629740f3761c", "d16a0141ec1a18405cd4ce8b4613101da75da0e9a7aec5bdd4fa804d0e0eba73"]
 traitlets = ["9c4bd2d267b7153df9152698efb1050a5d84982d3384a37b2c1f7723ba3e7835", "c6cb5e6f57c5a9bdaa40fa71ce7b4af30298fbab9ece9815b5d995ab6217c7d9"]
 urwid = ["644d3e3900867161a2fc9287a9762753d66bd194754679adb26aede559bcccbc"]

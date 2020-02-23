@@ -24,6 +24,7 @@ import sys
 import tokenize
 
 from loguru import logger
+#import pysnooper
 
 # our backup scripts create SQL files with the table name as the file
 # name. Plus the ".sql" extension, of course. We'll need to strip that
@@ -44,6 +45,24 @@ state_reset = {"select"}
 # Some queries are written with the database name preceding the table
 # name.  We don't want that, so skip those names
 skip_words = {"foxsec_metrics", "foxsec_metrics_stage"}
+
+# The legend is static, so define here
+LEGEND = r"""
+subgraph cluster_legend {
+    label = "Legend" ;
+    shape = rectangle;
+    s3 [label="S3 Objects"];
+    av [label="Athena Views", color=gold, style=filled];
+    it [label="Internal ('with') tables", color=lightblue, style=filled];
+    rq [label="Redash Queries", color=green, style=filled];
+
+    edge [style=dashed]
+    s3 -> av;
+    s3 -> rq;
+    s3 -> rq;
+    it -> rq;
+};
+"""
 
 # Since we're abusing the Python tokenizer, we need to handle some cases
 # ourselves. In particular, comments and bogus (for us) IndentationError
@@ -166,7 +185,6 @@ def process_files(path_list):
     global logger
     # logger.add(sys.stderr, format="{time} {extra[file_name]} - {message}")
     logger = logger.bind(file_name="<global>")
-    internal_tables = set()
     table_groups = collections.defaultdict(set)
     edges = collections.defaultdict(set)
     for path in path_list:
@@ -214,6 +232,7 @@ def output_graph(groups, edges):
     for tail, heads in edges.items():
         for head in heads:
             output_edge(tail, head)
+    print(LEGEND)
     print(r"""}""")
 
 
@@ -270,13 +289,14 @@ def parse_args():
     return parser.parse_args()
 
 
+#@pysnooper.snoop()
 def expand_files(l=None):
     expanded_files = []
     for item in l:
         if ("*" in item or "?" in item) and not item.startswith("/"):
             expanded_files.extend([p for p in Path(".").glob(item)])
         else:
-            expanded_files.append([Path(item)])
+            expanded_files.append(Path(item))
     return expanded_files
 
 

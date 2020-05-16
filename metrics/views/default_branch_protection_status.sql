@@ -2,6 +2,7 @@ CREATE VIEW foxsec_metrics.default_branch_protection_status AS
 SELECT
   "Protected"
 , "Service"
+, "appCode"
 , "meta"."org" "Org"
 , "meta"."repo" "Repo"
 , "branch"."branch" "Branch"

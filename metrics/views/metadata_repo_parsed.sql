@@ -4,5 +4,6 @@ SELECT
 , "split_part"("repo", '/', 4) "Org"
 , "replace"("split_part"("repo", '/', 5), '.git') "Repo"
 , "service" "Service"
+, "appCode" "appCode"
 FROM
   foxsec_metrics.metadata_repos

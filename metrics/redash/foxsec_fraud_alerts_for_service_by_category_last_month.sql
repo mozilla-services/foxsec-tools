@@ -1,10 +1,10 @@
 select
 EXTRACT(DATE from timestamp) as date,
 case value
-when 'addons.mozilla.org' then 
-    (SELECT value FROM UNNEST(metadata) WHERE key = 'amo_category')
-when 'accounts.firefox.com' then 
-    (SELECT value FROM UNNEST(metadata) WHERE key = 'customs_category')
+when 'addons.mozilla.org' then
+    (SELECT value FROM UNNEST(metadata) WHERE key = 'amo_category' OR key = 'category' LIMIT 1)
+when 'accounts.firefox.com' then
+    (SELECT value FROM UNNEST(metadata) WHERE key = 'customs_category' OR key = 'category' LIMIT 1)
 else
     (SELECT value FROM UNNEST(metadata) WHERE key = 'category')
 end as category,
@@ -15,10 +15,10 @@ where key = 'monitored_resource'
 and value = '{{ site }}'
 and ('cfgtick' !=
   case value
-  when 'addons.mozilla.org' then 
-      (SELECT value FROM UNNEST(metadata) WHERE key = 'amo_category')
-  when 'accounts.firefox.com' then 
-      (SELECT value FROM UNNEST(metadata) WHERE key = 'customs_category')
+  when 'addons.mozilla.org' then
+      (SELECT value FROM UNNEST(metadata) WHERE key = 'amo_category' OR key = 'category' LIMIT 1)
+  when 'accounts.firefox.com' then
+      (SELECT value FROM UNNEST(metadata) WHERE key = 'customs_category' OR key = 'category' LIMIT 1)
   else
       (SELECT value FROM UNNEST(metadata) WHERE key = 'category')
   end)

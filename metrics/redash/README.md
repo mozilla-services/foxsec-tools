@@ -9,7 +9,7 @@ manual query to files, which are then processed by `backup_queries`.
 The recommended steps are:
 1. ensure your repo is up to date
 1. Form the desired query on
-   [STMO](https://sql.telemetry.mozilla.org/queries?page=1&page_size=100) --
+   [STMO](https://sql.telemetry.mozilla.org/queries?page=1&page_size=200) --
    usually, we use the tag 'secops'.
 
    - Note that the above link is pre-configured for the maximum results per
@@ -26,7 +26,7 @@ The recommended steps are:
 1. Add all the new and modified files to git, and commit:
     ```bash
     git add .
-    git commit -m "Backup on $(date --iso)"
+    git commit -am "Backup on $(date --iso)"
     git push
     ```
 

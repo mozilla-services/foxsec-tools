@@ -3,6 +3,9 @@
 # Install aws_cli
 pip3 install awscli --upgrade
 
+# Print creds (creds redacted)
+aws configure list
+
 # Sync todays files
 today=`date +%F`
 mkdir s3bucket

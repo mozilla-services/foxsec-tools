@@ -3,14 +3,6 @@
 # Install aws_cli
 pip3 install awscli --upgrade
 
-# Set up the aws credentials
-mkdir ~/.aws
-cat > ~/.aws/credentials <<DELIM
-[default]
-aws_access_key_id = $AWS_ACCESS_KEY
-aws_secret_access_key = $AWS_SECRET_KEY
-DELIM
-
 # Sync todays files
 today=`date +%F`
 mkdir s3bucket
@@ -27,7 +19,7 @@ aws s3 sync s3://foxsec-metrics/ascan/details_json/ out/details_json/ --exclude 
 
 python3 transformers/ascan_changes.py -s out/ -d out/ -l
 
- 
+
 # Write todays files to aws
 aws s3 cp out/details_json/$today s3://foxsec-metrics/ascan/details_json/$today
 aws s3 cp out/sites_json/$today s3://foxsec-metrics/ascan/sites_json/$today

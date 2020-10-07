@@ -1,7 +1,7 @@
 # Utilities for the metric project
 
 Utilities in this directory are most likely only needed by the metrics
-product.
+product. See also the [conventions doc](Conventions.md) for additional commentary.
 
 ## generate_table_graph - Generate DOT diagrams of table usage
 

@@ -20,11 +20,11 @@ The file extension should be appropriate for the internal representation.
 
 ## Standard Fields
 
-It is highly recommended that each record contains the UTC data collection date, as the field `date`, formatted in iso style. 
+It is highly recommended that each record contains the UTC data collection date, as the field `day`, formatted in iso style. 
 (I.e. the output of `date --utc --iso`.) While the date is available in the file name, 
 the Athena processing does not allow that to be referenced.
 
-If you're using a nested JSON format, the `date` field should be on the top level. (I.e. not nested.)
+If you're using a nested JSON format, the `day` field should be on the top level. (I.e. not nested.)
 
 ## S3 layout
 

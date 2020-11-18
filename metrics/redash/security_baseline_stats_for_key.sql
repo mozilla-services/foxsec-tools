@@ -1,7 +1,7 @@
 SELECT
  site,
- --key, 
- count(*) as count
+ --key,
+ sum(value) as sum
 FROM "foxsec_metrics"."baseline_stats"
 join (
     select max(baseline_stats.day) as MaxDay
